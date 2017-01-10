@@ -34,13 +34,14 @@ RUN set -x \
 	&& hash -r \
 	&& pip install --no-compile --upgrade pip setuptools \
 	&& pip install --no-index --no-compile --find-links /tmp/packages --constraint /tmp/packages/upper-constraints.txt /tmp/${PROJECT} \
+	&& groupadd -g 42424 ${PROJECT} \
+  && useradd -u 42424 -g ${PROJECT} -d /var/lib/${PROJECT} -s /sbin/nologin -c "${PROJECT} user" ${PROJECT} \
+	&& mkdir -p /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJECT} /var/cache/${PROJECT} \
+	&& chown ${PROJECT}:${PROJECT} /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJECT} /var/cache/${PROJECT} \
 	&& apt-get purge -y --auto-remove \
 		ca-certificates \
 		curl \
 		git \
 		virtualenv \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /root/.cache \
-	&& find / -type f \( -name "*.pyc" -o -name "pip" -o -name "easy_install" -o -name "wheel" \) -delete \
-	&& groupadd -g 42424 ${PROJECT} && useradd -u 42424 -g ${PROJECT} -s /sbin/nologin -c "${PROJECT} user" ${PROJECT} \
-	&& mkdir -p /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJECT} /var/cache/${PROJECT} \
-	&& chown ${PROJECT}:${PROJECT} /etc/${PROJECT} /var/log/${PROJECT} /var/lib/${PROJECT} /var/cache/${PROJECT}
+	&& find / -type f \( -name "*.pyc" -o -name "pip" -o -name "easy_install" -o -name "wheel" \) -delete
